@@ -116,7 +116,7 @@ class Netmiko:
         """Connects to the router via netmiko library, return the command output"""
         # Debug
         logger.debug(f"Netmiko host: {pprint(self.nm_host)}")
-        logger.debug(f"Connecting to host via Netmiko library...")
+        logger.debug("Connecting to host via Netmiko library...")
         # End Debug
         try:
             nm_connect_direct = ConnectHandler(**self.nm_host)
@@ -163,12 +163,11 @@ class Netmiko:
         try:
             # Accept SSH key warnings
             if "Are you sure you want to continue connecting" in proxy_output:
-                logger.debug(f"Received OpenSSH key warning")
+                logger.debug("Received OpenSSH key warning")
                 nm_connect_proxied.write_channel("yes" + "\n")
                 nm_connect_proxied.write_channel(self.nm_host["password"] + "\n")
-            # Send password on prompt
             elif "assword" in proxy_output:
-                logger.debug(f"Received password prompt")
+                logger.debug("Received password prompt")
                 nm_connect_proxied.write_channel(self.nm_host["password"] + "\n")
                 proxy_output += nm_connect_proxied.read_channel()
             # Reclassify netmiko connection as configured device type
@@ -208,7 +207,7 @@ class Execute:
     def parse(self, output, nos):
         """Splits BGP output by AFI, returns only IPv4 & IPv6 output for protocol-agnostic \
         commands (Community & AS_PATH Lookups)"""
-        logger.debug(f"Parsing output...")
+        logger.debug("Parsing output...")
         parsed = output
         if self.input_type in ["bgp_community", "bgp_aspath"]:
             if nos in ["cisco_ios"]:
@@ -239,7 +238,7 @@ class Execute:
             self.input_target
         )
         if not validity:
-            logger.debug(f"Invalid query")
+            logger.debug("Invalid query")
             ## return msg, status, self.input_data
             return {"output": msg, "status": status}
         connection = None
@@ -253,7 +252,7 @@ class Execute:
             ## return output, status, info
             return {"output": output, "status": status}
         if device_config["type"] in configuration.scrape_list():
-            logger.debug(f"Initializing Netmiko...")
+            logger.debug("Initializing Netmiko...")
             connection = Netmiko(
                 "scrape", device_config, self.input_type, self.input_target
             )

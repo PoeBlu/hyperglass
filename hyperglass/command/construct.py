@@ -32,8 +32,7 @@ else:
 
 def current_function():
     """Returns name of current function"""
-    this_function = inspect.stack()[1][3]
-    return this_function
+    return inspect.stack()[1][3]
 
 
 class Construct:
@@ -52,7 +51,7 @@ class Construct:
         src = None
         if ver == 4:
             src = self.d_src_addr_ipv4
-        if ver == 6:
+        elif ver == 6:
             src = self.d_src_addr_ipv6
         logger.debug(f"Source IPv{ver}: {src}")
         return src

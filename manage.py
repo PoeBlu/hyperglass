@@ -25,10 +25,9 @@ working_directory = os.path.dirname(os.path.abspath(__file__))
 
 def construct_test(test_query, location, test_target):
     """Constructs JSON POST data for test_hyperglass function"""
-    constructed_query = json.dumps(
+    return json.dumps(
         {"type": test_query, "location": location, "target": test_target}
     )
-    return constructed_query
 
 
 @click.group()
@@ -56,7 +55,7 @@ def pylint_badge(int_only):
         pylint_score = re.search(
             r"Your code has been rated at (\d+\.\d+)\/10.*", pylint_output
         ).group(1)
-        if not pylint_score == "10.00":
+        if pylint_score != "10.00":
             raise RuntimeError(f"Pylint score {pylint_score} not acceptable.")
         badge_file = os.path.join(working_directory, "pylint.svg")
         if os.path.exists(badge_file):
@@ -94,7 +93,7 @@ def pre_check():
         config = configuration.params()
         status = True
         while status:
-            if config["general"]["primary_asn"] == "65000" or "":
+            if config["general"]["primary_asn"] == "65000":
                 status = False
                 reason = f'Primary ASN is not defined (Current: "{config["general"]["primary_asn"]}")'
                 remediation = f"""
@@ -104,9 +103,7 @@ configuration:\n
 primary_asn = "<Your Primary AS Number>"
 \nIf you do not define a Primary ASN, \"{config["general"]["primary_asn"]}\" will be used."""
                 break
-                click.secho(reason, fg="red", bold=True)
-                click.secho(remediation, fg="blue")
-            if config["general"]["org_name"] == "The Company" or "":
+            if config["general"]["org_name"] == "The Company":
                 status = False
                 reason = f'Org Name is not defined (Current: "{config["general"]["org_name"]}")'
                 remediation = f"""
@@ -116,8 +113,6 @@ configuration:\n
 org_name = "<Your Org Name>"
 \nIf you do not define an Org Name, \"{config["general"]["org_name"]}\" will be displayed."""
                 break
-                click.secho(reason, fg="red", bold=True)
-                click.secho(remediation, fg="blue")
             click.secho(
                 "✓ All critical hyperglass parameters are defined!",
                 fg="green",

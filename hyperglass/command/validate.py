@@ -120,10 +120,7 @@ def ip_blacklist(target):
     """Check blacklist list for prefixes/IPs, return boolean based on list membership"""
     blacklist = IPSet(configuration.blacklist())
     logger.debug(f"Blacklist: {blacklist}")
-    membership = False
-    if target in blacklist:
-        membership = True
-    return membership
+    return target in blacklist
 
 
 def ip_attributes(target):
@@ -134,7 +131,7 @@ def ip_attributes(target):
     afi = f"ipv{ip_version}"
     afi_pretty = f"IPv{ip_version}"
     length = network.prefixlen
-    valid_attributes = {
+    return {
         "prefix": target,
         "network": network,
         "version": ip_version,
@@ -142,7 +139,6 @@ def ip_attributes(target):
         "afi": afi,
         "afi_pretty": afi_pretty,
     }
-    return valid_attributes
 
 
 def ip_type_check(query_type, target, device):
@@ -155,7 +151,7 @@ def ip_type_check(query_type, target, device):
     # If target is a member of the blacklist, return an error.
     if ip_blacklist(target):
         validity = False
-        logger.debug(f"Failed blacklist check")
+        logger.debug("Failed blacklist check")
         return (validity, msg)
     # If enable_max_prefix feature enabled, require that BGP Route queries be smaller than\
     # configured size limit.
@@ -166,7 +162,7 @@ def ip_type_check(query_type, target, device):
             msg = config["features"]["max_prefix"]["message"].format(
                 m=max_length, i=prefix_attr["network"]
             )
-            logger.debug(f"Failed max prefix length check")
+            logger.debug("Failed max prefix length check")
             return (validity, msg)
     # If device NOS is listed in requires_ipv6_cidr.toml, and query is an IPv6 host address, \
     # return an error.
@@ -178,13 +174,13 @@ def ip_type_check(query_type, target, device):
     ):
         msg = config["messages"]["requires_ipv6_cidr"].format(d=device["display_name"])
         validity = False
-        logger.debug(f"Failed requires IPv6 CIDR check")
+        logger.debug("Failed requires IPv6 CIDR check")
         return (validity, msg)
     # If query type is ping or traceroute, and query target is in CIDR format, return an error.
     if query_type in ["ping", "traceroute"] and IPType().is_cidr(target):
         msg = config["messages"]["directed_cidr"].format(q=query_type.capitalize())
         validity = False
-        logger.debug(f"Failed CIDR format for ping/traceroute check")
+        logger.debug("Failed CIDR format for ping/traceroute check")
         return (validity, msg)
     validity = True
     msg = f"{target} is a valid {query_type} query."
@@ -193,8 +189,7 @@ def ip_type_check(query_type, target, device):
 
 def current_function():
     """Returns name of current function for easy initialization & calling."""
-    this_function = inspect.stack()[1][3]
-    return this_function
+    return inspect.stack()[1][3]
 
 
 class Validate:
