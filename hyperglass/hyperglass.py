@@ -88,7 +88,7 @@ count_notfound = Counter(
 @app.route("/metrics")
 def metrics():
     """Prometheus metrics"""
-    content_type_latest = str("text/plain; version=0.0.4; charset=utf-8")
+    content_type_latest = "text/plain; version=0.0.4; charset=utf-8"
     registry = CollectorRegistry()
     multiprocess.MultiProcessCollector(registry)
     return Response(generate_latest(registry), mimetype=content_type_latest)

@@ -17,16 +17,14 @@ def get_hyperglass_config():
     sys.path.insert(0, parent_directory)
     from hyperglass import configuration
 
-    hg_config = configuration.params()
-    return hg_config
+    return configuration.params()
 
 
 def construct_test(test_query, location, test_target):
     """Constructs JSON POST data for test_hyperglass function"""
-    constructed_query = json.dumps(
+    return json.dumps(
         {"type": test_query, "location": location, "target": test_target}
     )
-    return constructed_query
 
 
 def ci_hyperglass_test(
@@ -37,7 +35,6 @@ def ci_hyperglass_test(
     invalid_ip = "this_ain't_an_ip!"
     invalid_aspath = ".*"
     ipv4_cidr = "1.1.1.0/24"
-    ipv6_host = "2606:4700:4700::1111"
     ipv6_cidr = "2606:4700:4700::/48"
     test_headers = {"Content-Type": "application/json"}
     test_endpoint = "http://localhost:5000/lg"
@@ -48,7 +45,7 @@ def ci_hyperglass_test(
         hg_response = requests.post(
             test_endpoint, headers=test_headers, data=test_query
         )
-        if not hg_response.status_code in range(400, 500):
+        if hg_response.status_code not in range(400, 500):
             logger.error(hg_response.text)
             raise RuntimeError("No Query Type test failed")
     except:
@@ -61,7 +58,7 @@ def ci_hyperglass_test(
         hg_response = requests.post(
             test_endpoint, headers=test_headers, data=test_query
         )
-        if not hg_response.status_code in range(400, 500):
+        if hg_response.status_code not in range(400, 500):
             logger.error(hg_response.text)
             raise RuntimeError("No Location test failed")
     except:
@@ -74,7 +71,7 @@ def ci_hyperglass_test(
         hg_response = requests.post(
             test_endpoint, headers=test_headers, data=test_query
         )
-        if not hg_response.status_code in range(400, 500):
+        if hg_response.status_code not in range(400, 500):
             logger.error(hg_response.text)
             raise RuntimeError("No Target test failed")
     except:
@@ -87,20 +84,21 @@ def ci_hyperglass_test(
         hg_response = requests.post(
             test_endpoint, headers=test_headers, data=test_query
         )
-        if not hg_response.status_code in range(400, 500):
+        if hg_response.status_code not in range(400, 500):
             logger.error(hg_response.text)
             raise RuntimeError("Invalid BGP IPv4 Route test failed")
     except:
         logger.error("Exception occurred while running Invalid BGP IPv4 Route test...")
     # Requires IPv6 CIDR Test
     if requires_ipv6_cidr:
+        ipv6_host = "2606:4700:4700::1111"
         try:
             logger.info("Starting Requires IPv6 CIDR test...")
             test_query = construct_test("bgp_route", requires_ipv6_cidr, ipv6_host)
             hg_response = requests.post(
                 test_endpoint, headers=test_headers, data=test_query
             )
-            if not hg_response.status_code in range(400, 500):
+            if hg_response.status_code not in range(400, 500):
                 logger.error(hg_response.text)
                 raise RuntimeError("Requires IPv6 CIDR test failed")
         except:
@@ -113,7 +111,7 @@ def ci_hyperglass_test(
         hg_response = requests.post(
             test_endpoint, headers=test_headers, data=test_query
         )
-        if not hg_response.status_code in range(400, 500):
+        if hg_response.status_code not in range(400, 500):
             logger.error(hg_response.text)
             raise RuntimeError("Invalid BGP Community test failed")
     except:
@@ -126,7 +124,7 @@ def ci_hyperglass_test(
         hg_response = requests.post(
             test_endpoint, headers=test_headers, data=test_query
         )
-        if not hg_response.status_code in range(400, 500):
+        if hg_response.status_code not in range(400, 500):
             logger.error(hg_response.text)
             raise RuntimeError("Invalid BGP AS_PATH test failed")
     except:
@@ -139,7 +137,7 @@ def ci_hyperglass_test(
         hg_response = requests.post(
             test_endpoint, headers=test_headers, data=test_query
         )
-        if not hg_response.status_code in range(400, 500):
+        if hg_response.status_code not in range(400, 500):
             logger.error(hg_response.text)
             raise RuntimeError("Invalid IPv4 Ping test failed")
     except:
@@ -152,7 +150,7 @@ def ci_hyperglass_test(
         hg_response = requests.post(
             test_endpoint, headers=test_headers, data=test_query
         )
-        if not hg_response.status_code in range(400, 500):
+        if hg_response.status_code not in range(400, 500):
             logger.error(hg_response.text)
             raise RuntimeError("Invalid IPv6 Ping test failed")
     except:
@@ -165,7 +163,7 @@ def ci_hyperglass_test(
         hg_response = requests.post(
             test_endpoint, headers=test_headers, data=test_query
         )
-        if not hg_response.status_code in range(400, 500):
+        if hg_response.status_code not in range(400, 500):
             logger.error(hg_response.text)
             raise RuntimeError("Blacklist test failed")
     except:

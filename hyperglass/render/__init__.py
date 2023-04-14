@@ -132,20 +132,14 @@ def info(file_name):
             file_read = file_raw.read()
             _, frontmatter, content = file_read.split("+++")
             frontmatter_dict[file_name] = toml.loads(frontmatter)
-        md_template_fm = jinja2.Environment(loader=jinja2.BaseLoader).from_string(
-            frontmatter
-        )
-        md_template_content = jinja2.Environment(loader=jinja2.BaseLoader).from_string(
-            content
-        )
     else:
         _, frontmatter, content = default_info[file_name].split("+++")
-        md_template_fm = jinja2.Environment(loader=jinja2.BaseLoader).from_string(
-            frontmatter
-        )
-        md_template_content = jinja2.Environment(loader=jinja2.BaseLoader).from_string(
-            content
-        )
+    md_template_fm = jinja2.Environment(loader=jinja2.BaseLoader).from_string(
+        frontmatter
+    )
+    md_template_content = jinja2.Environment(loader=jinja2.BaseLoader).from_string(
+        content
+    )
     frontmatter_rendered = md_template_fm.render(**config)
     frontmatter_dict[file_name] = toml.loads(frontmatter_rendered)
     content_rendered = md_template_content.render(**config, info=frontmatter_dict)
@@ -171,21 +165,15 @@ def details(file_name):
         with open(file, "r") as file_raw:
             file_read = file_raw.read()
             _, frontmatter, content = file_read.split("+++")
-        md_template_fm = jinja2.Environment(loader=jinja2.BaseLoader).from_string(
-            frontmatter
-        )
-        md_template_content = jinja2.Environment(loader=jinja2.BaseLoader).from_string(
-            content
-        )
     else:
         _, frontmatter, content = default_details[file_name].split("+++")
         frontmatter_dict[file_name] = toml.loads(frontmatter)
-        md_template_fm = jinja2.Environment(loader=jinja2.BaseLoader).from_string(
-            frontmatter
-        )
-        md_template_content = jinja2.Environment(loader=jinja2.BaseLoader).from_string(
-            content
-        )
+    md_template_fm = jinja2.Environment(loader=jinja2.BaseLoader).from_string(
+        frontmatter
+    )
+    md_template_content = jinja2.Environment(loader=jinja2.BaseLoader).from_string(
+        content
+    )
     frontmatter_rendered = md_template_fm.render(**config)
     frontmatter_dict[file_name] = toml.loads(frontmatter_rendered)
     content_rendered = md_template_content.render(**config, details=frontmatter_dict)
@@ -199,12 +187,12 @@ def html(template_name):
     details_dict = {}
     for details_name in details_name_list:
         details_data = details(details_name)
-        details_dict.update(details_data)
+        details_dict |= details_data
     info_list = ["bgp_route", "bgp_aspath", "bgp_community", "ping", "traceroute"]
     info_dict = {}
     for info_name in info_list:
         info_data = info(info_name)
-        info_dict.update(info_data)
+        info_dict |= info_data
     template = env.get_template(f"templates/{template_name}.html")
     return template.render(
         **config, info=info_dict, details=details_dict, networks=networks

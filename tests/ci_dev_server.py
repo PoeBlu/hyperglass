@@ -13,10 +13,9 @@ parent_directory = os.path.dirname(working_directory)
 
 def construct_test(test_query, location, test_target):
     """Constructs JSON POST data for test_hyperglass function"""
-    constructed_query = json.dumps(
+    return json.dumps(
         {"type": test_query, "location": location, "target": test_target}
     )
-    return constructed_query
 
 
 def flask_dev_server(host, port):

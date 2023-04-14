@@ -26,8 +26,7 @@ devices = toml.load(os.path.join(working_dir, "devices.toml"))
 
 def debug_state():
     """Returns string for logzero log level"""
-    state = config.get("debug", False)
-    return state
+    return config.get("debug", False)
 
 
 # Logzero Configuration
@@ -39,15 +38,14 @@ else:
 
 def blacklist():
     """Returns list of subnets/IPs defined in blacklist.toml"""
-    blacklist_config = config["blacklist"]
-    return blacklist_config
+    return config["blacklist"]
 
 
 def requires_ipv6_cidr(nos):
     """Returns boolean for input NOS association with the NOS list defined in \
     requires_ipv6_cidr.toml"""
     nos_list = config["requires_ipv6_cidr"]
-    return bool(nos in nos_list)
+    return nos in nos_list
 
 
 def networks():
@@ -66,11 +64,8 @@ def networks():
 
 def hostnames():
     """Returns list of all router hostnames for input validation"""
-    hostname_list = []
     routers_list = devices["router"]
-    for router in routers_list:
-        hostname_list.append(router)
-    return hostname_list
+    return list(routers_list)
 
 
 def locations_list():
@@ -103,7 +98,7 @@ def locations_list():
 
 def codes():
     """Reusable status code numbers"""
-    code_dict = {
+    return {
         # 200: renders standard display text
         "success": 200,
         # 405: Renders Bulma "warning" class notification message with message text
@@ -111,53 +106,47 @@ def codes():
         # 415: Renders Bulma "danger" class notification message with message text
         "danger": 415,
     }
-    return code_dict
 
 
 def codes_reason():
     """Reusable status code descriptions"""
-    code_desc_dict = {
+    return {
         200: "Valid Query",
         405: "Query Not Allowed",
         415: "Query Invalid",
     }
-    return code_desc_dict
 
 
 def rest_list():
     """Returns list of supported hyperglass API types"""
-    rest = ["frr"]
-    return rest
+    return ["frr"]
 
 
 def scrape_list():
     """Returns list of configured network operating systems"""
     config_commands = toml.load(os.path.join(working_dir, "commands.toml"))
-    scrape = []
-    for nos in config_commands:
-        scrape.append(nos)
-    return scrape
+    return list(config_commands)
 
 
 def supported_nos():
     """Combines scrape_list & rest_list for full list of supported network operating systems"""
     scrape = scrape_list()
     rest = rest_list()
-    supported = scrape + rest
-    return supported
+    return scrape + rest
 
 
 def command(nos):
     """Associates input NOS with matched commands defined in commands.toml"""
     config_commands = toml.load(os.path.join(working_dir, "commands.toml"))
-    commands = None
-    if nos in scrape_list():
-        commands = {
+    return (
+        {
             "dual": config_commands[nos][0]["dual"],
             "ipv4": config_commands[nos][0]["ipv4"],
             "ipv6": config_commands[nos][0]["ipv6"],
         }
-    return commands
+        if nos in scrape_list()
+        else None
+    )
 
 
 def credential(cred):
